@@ -2,10 +2,16 @@
 #ifndef MATHUTILS_H
 #define MATHUTILS_H
 
-class MathUtils {
-public:
-    int power(int base, int exponent);
-    int factorial(int n);
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif // MATHUTILS_H
+// 数学工具函数声明
+int mathutils_power(int base, int exponent);
+int mathutils_factorial(int n);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MATHUTILS_H */

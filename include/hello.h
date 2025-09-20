@@ -2,13 +2,22 @@
 #ifndef HELLO_H
 #define HELLO_H
 
-#include <string>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-class Hello {
-public:
-    std::string sayHello();
-    std::string sayHello(const std::string& name);
-    std::string getGreeting();
-};
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif // HELLO_H
+// 问候功能函数声明
+// 注意：C语言中我们使用字符数组而不是std::string
+void hello_say_hello(char* buffer, size_t buffer_size);
+void hello_say_hello_with_name(char* buffer, size_t buffer_size, const char* name);
+void hello_get_greeting(char* buffer, size_t buffer_size);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* HELLO_H */

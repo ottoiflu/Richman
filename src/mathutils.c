@@ -1,7 +1,7 @@
-// src/mathutils.cpp
+// src/mathutils.c
 #include "mathutils.h"
 
-int MathUtils::power(int base, int exponent) {
+int mathutils_power(int base, int exponent) {
     if (exponent == 0) {
         return 1;
     }
@@ -13,7 +13,7 @@ int MathUtils::power(int base, int exponent) {
     return result;
 }
 
-int MathUtils::factorial(int n) {
+int mathutils_factorial(int n) {
     if (n <= 1) {
         return 1;
     }
