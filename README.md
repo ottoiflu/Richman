@@ -142,6 +142,187 @@ make test
 
 注意：我们的轻量级测试框架会自动运行所有测试，输出清晰的测试结果。
 
+### 单独测试特定功能
+
+虽然我们的测试框架默认运行所有测试，但你可以通过以下方法测试特定功能：
+
+#### 方法1：编译并运行单个测试文件
+
+```bash
+# 只编译和测试calculator模块
+gcc -std=c99 -g -Wall -I./include -c src/calculator.c -o obj/calculator.o
+gcc -std=c99 -g -Wall -I./include -c src/test_framework.c -o obj/test_framework.o
+gcc -std=c99 -g -Wall -I./include -c tests/test_calculator.c -o obj/test_calculator.o
+
+# 创建单独的测试程序
+gcc -std=c99 -g -Wall -I./include -o bin/test_calculator obj/calculator.o obj/test_framework.o obj/test_calculator.o -lm
+
+# 但需要添加main函数，见下面的方法2
+```
+
+#### 方法2：创建临时测试运行器
+
+创建一个临时的测试运行器来只运行特定测试：
+
+```bash
+# 创建临时测试文件
+cat > temp_test_calculator.c << 'EOF'
+#include "test_framework.h"
+
+// 声明要测试的函数
+extern void run_CalculatorTest_Add(void);
+extern void run_CalculatorTest_Subtract(void);
+
+int main(void) {
+    init_test_framework();
+    
+    printf("[----------] 2 tests from CalculatorTest\n");
+    RUN_TEST(CalculatorTest, Add);
+    RUN_TEST(CalculatorTest, Subtract);
+    printf("[----------] 2 tests from CalculatorTest (0 ms total)\n\n");
+    
+    print_test_results();
+    return run_all_tests();
+}
+EOF
+
+# 编译并运行
+gcc -std=c99 -g -Wall -I./include -o bin/test_calc_only \
+    src/calculator.c src/test_framework.c tests/test_calculator.c temp_test_calculator.c -lm
+
+# 运行特定测试
+./bin/test_calc_only
+
+# 清理临时文件
+rm temp_test_calculator.c
+```
+
+#### 方法3：修改test_runner.c（推荐用于开发阶段）
+
+临时注释掉不需要的测试：
+
+```c
+// 在 tests/test_runner.c 中注释掉不需要的测试
+int main(void) {
+    init_test_framework();
+    
+    // 只运行Calculator测试
+    printf("[----------] 2 tests from CalculatorTest\n");
+    RUN_TEST(CalculatorTest, Add);
+    RUN_TEST(CalculatorTest, Subtract);
+    printf("[----------] 2 tests from CalculatorTest (0 ms total)\n\n");
+    
+    // 注释掉其他测试
+    /*
+    printf("[----------] 2 tests from MathUtilsTest\n");
+    RUN_TEST(MathUtilsTest, Power);
+    RUN_TEST(MathUtilsTest, Factorial);
+    printf("[----------] 2 tests from MathUtilsTest (0 ms total)\n\n");
+    
+    printf("[----------] 3 tests from HelloTest\n");
+    RUN_TEST(HelloTest, SayHello);
+    RUN_TEST(HelloTest, SayHelloWithName);
+    RUN_TEST(HelloTest, GetGreeting);
+    printf("[----------] 3 tests from HelloTest (0 ms total)\n\n");
+    */
+    
+    print_test_results();
+    return run_all_tests();
+}
+```
+
+然后运行：
+```bash
+make test
+```
+
+#### 方法4：使用条件编译（高级用法）
+
+在测试文件中使用条件编译：
+
+```c
+// 在 tests/test_runner.c 开头添加
+#define RUN_CALCULATOR_TESTS 1
+#define RUN_MATHUTILS_TESTS 0
+#define RUN_HELLO_TESTS 0
+
+int main(void) {
+    init_test_framework();
+    
+#if RUN_CALCULATOR_TESTS
+    printf("[----------] 2 tests from CalculatorTest\n");
+    RUN_TEST(CalculatorTest, Add);
+    RUN_TEST(CalculatorTest, Subtract);
+    printf("[----------] 2 tests from CalculatorTest (0 ms total)\n\n");
+#endif
+
+#if RUN_MATHUTILS_TESTS
+    printf("[----------] 2 tests from MathUtilsTest\n");
+    RUN_TEST(MathUtilsTest, Power);
+    RUN_TEST(MathUtilsTest, Factorial);
+    printf("[----------] 2 tests from MathUtilsTest (0 ms total)\n\n");
+#endif
+
+#if RUN_HELLO_TESTS
+    printf("[----------] 3 tests from HelloTest\n");
+    RUN_TEST(HelloTest, SayHello);
+    RUN_TEST(HelloTest, SayHelloWithName);
+    RUN_TEST(HelloTest, GetGreeting);
+    printf("[----------] 3 tests from HelloTest (0 ms total)\n\n");
+#endif
+    
+    print_test_results();
+    return run_all_tests();
+}
+```
+
+### 快速单模块测试（推荐方法）
+
+项目提供了`test_single.sh`脚本，可以轻松测试单个模块：
+
+```bash
+# 测试calculator模块
+./test_single.sh calculator
+
+# 测试mathutils模块  
+./test_single.sh mathutils
+
+# 测试hello模块
+./test_single.sh hello
+
+# 查看可用模块
+./test_single.sh
+```
+
+#### 示例输出：
+
+```bash
+$ ./test_single.sh calculator
+=== 测试 calculator 模块 ===
+编译Calculator模块测试...
+运行测试...
+[==========] Running tests.
+[----------] Global test environment set-up.
+[----------] 2 tests from CalculatorTest
+[ RUN      ] CalculatorTest.Add
+[       OK ] CalculatorTest.Add
+[ RUN      ] CalculatorTest.Subtract
+[       OK ] CalculatorTest.Subtract
+[----------] 2 tests from CalculatorTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 2 test(s) ran.
+[  PASSED  ] 2 test(s).
+
+✅ calculator 模块测试通过！
+```
+
+这种方法的优势：
+- ✅ **快速**：只编译和测试指定模块
+- ✅ **独立**：不影响其他模块
+- ✅ **清晰**：输出专注于测试的模块
+- ✅ **自动化**：自动清理临时文件
+
 ### 批量测试配置
 
 我们的C语言版本保持了批量测试功能：
