@@ -1,9 +1,0 @@
-# 批量测试配置文件
-# 只运行Calculator相关的测试
-CalculatorTest.*
-
-# 只运行MathUtils的Power测试
-MathUtilsTest.Power
-
-# 运行所有游戏计算测试
-GameCalculationTest.*

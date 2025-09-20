@@ -1,3 +1,0 @@
-# Hello World 专用测试配置
-# 运行所有Hello测试
-HelloTest.*
