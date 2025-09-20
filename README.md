@@ -1,32 +1,32 @@
-# Richman - TDD开发指南
+# Richman - C语言TDD开发指南
 
 ## 📖 项目简介
 
-Richman是一个使用测试驱动开发（TDD）方法构建的C++项目。本项目展示了如何建立完整的TDD工作流程，包括自动化构建、测试管理和持续集成。
+Richman是一个使用测试驱动开发（TDD）方法构建的C语言项目。本项目展示了如何在C语言环境下建立完整的TDD工作流程，包括自制测试框架、自动化构建和测试管理。
 
-**软件工程2组** - 展示现代C++开发最佳实践
+**软件工程2组** - 展示C语言TDD开发最佳实践
 
 ## 🏗️ 项目结构
 
 ```
 Richman/
 ├── include/              # 头文件
-│   ├── calculator.h      # 计算器类
-│   ├── mathutils.h       # 数学工具类
-│   └── hello.h           # 问候功能类
+│   ├── calculator.h      # 计算器函数声明
+│   ├── mathutils.h       # 数学工具函数声明
+│   ├── hello.h           # 问候功能函数声明
+│   └── test_framework.h  # 自制测试框架
 ├── src/                  # 源代码实现
-│   ├── calculator.cpp
-│   ├── mathutils.cpp
-│   └── hello.cpp
+│   ├── calculator.c      # 计算器功能实现
+│   ├── mathutils.c       # 数学工具实现
+│   ├── hello.c           # 问候功能实现
+│   └── test_framework.c  # 测试框架实现
 ├── tests/                # 测试文件
-│   ├── test_calculator.cpp
-│   ├── test_mathutils.cpp
-│   ├── test_hello.cpp
-│   └── test_game_suite.cpp
-├── googletest/           # Google Test框架
+│   ├── test_calculator.c # 计算器测试
+│   ├── test_mathutils.c  # 数学工具测试
+│   ├── test_hello.c      # 问候功能测试
+│   └── test_runner.c     # 测试运行器
 ├── obj/                  # 编译对象文件（自动生成）
 ├── bin/                  # 可执行文件（自动生成）
-├── lib/                  # 库文件（自动生成）
 ├── Makefile              # 构建配置
 ├── test_batch.txt        # 批量测试配置
 └── README.md             # 本文件
@@ -36,10 +36,11 @@ Richman/
 
 ### 前置要求
 
-- **编译器**: g++ (支持C++17)
+- **编译器**: gcc (支持C99)
 - **构建工具**: make
 - **版本控制**: git
 - **操作系统**: Linux/Unix (WSL2支持)
+- **标准库**: 只需要C标准库，无外部依赖
 
 ### 克隆和构建
 
@@ -70,39 +71,45 @@ make clean
 
 #### 步骤1: 创建测试文件 (Red)
 
-```cpp
-// tests/test_newfeature.cpp
-#include "gtest/gtest.h"
+```c
+// tests/test_newfeature.c
+#include "test_framework.h"
 #include "newfeature.h"
 
 TEST(NewFeatureTest, BasicFunction) {
-    NewFeature feature;
-    EXPECT_EQ(feature.calculate(5), 25);
+    int result = newfeature_calculate(5);
+    EXPECT_EQ(25, result);
 }
 ```
 
 #### 步骤2: 创建头文件
 
-```cpp
+```c
 // include/newfeature.h
 #ifndef NEWFEATURE_H
 #define NEWFEATURE_H
 
-class NewFeature {
-public:
-    int calculate(int input);
-};
-
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+// 新功能函数声明
+int newfeature_calculate(int input);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* NEWFEATURE_H */
 ```
 
 #### 步骤3: 实现功能 (Green)
 
-```cpp
-// src/newfeature.cpp
+```c
+// src/newfeature.c
 #include "newfeature.h"
 
-int NewFeature::calculate(int input) {
+int newfeature_calculate(int input) {
     return input * input;  // 最简实现
 }
 ```
@@ -121,107 +128,101 @@ make test
 make test
 ```
 
-### 运行特定测试套件
+### 自定义测试运行
+
+由于我们使用自制的测试框架，测试运行更加简单：
 
 ```bash
-# 只运行Calculator相关测试
-./bin/run_tests --gtest_filter=CalculatorTest.*
+# 运行所有测试（默认行为）
+make test
 
-# 只运行Hello相关测试  
-./bin/run_tests --gtest_filter=HelloTest.*
-
-# 运行多个测试套件
-./bin/run_tests --gtest_filter=CalculatorTest.*:MathUtilsTest.*
+# 直接运行测试可执行文件
+./bin/run_tests
 ```
 
-### 运行单个测试用例
-
-```bash
-# 运行特定测试用例
-./bin/run_tests --gtest_filter=HelloTest.SayHello
-
-# 使用通配符
-./bin/run_tests --gtest_filter=HelloTest.Say*
-```
+注意：我们的轻量级测试框架会自动运行所有测试，输出清晰的测试结果。
 
 ### 批量测试配置
 
-编辑 `test_batch.txt` 文件：
+我们的C语言版本保持了批量测试功能：
 
 ```bash
-# 批量测试配置示例
-CalculatorTest.*
-MathUtilsTest.Power
-HelloTest.Say*
-```
-
-运行批量测试：
-
-```bash
+# 运行批量测试
 make run-batch
 ```
 
-使用自定义配置文件：
-
-```bash
-make run-batch TEST_BATCH_FILE=my_tests.txt
-```
+注意：批量测试在C语言版本中运行所有已编译的测试，配置文件用于记录测试计划。
 
 ## 🛠️ 开发指南
 
 ### 添加新功能
 
-1. **创建测试文件**: `tests/test_yourfeature.cpp`
+1. **创建测试文件**: `tests/test_yourfeature.c`
 2. **编写失败测试**: 定义期望的接口和行为
 3. **创建头文件**: `include/yourfeature.h`
-4. **实现功能**: `src/yourfeature.cpp`
-5. **运行测试**: `make test`
-6. **重构优化**: 改进代码质量
+4. **实现功能**: `src/yourfeature.c`
+5. **更新测试运行器**: 在 `tests/test_runner.c` 中添加新测试
+6. **运行测试**: `make test`
+7. **重构优化**: 改进代码质量
 
 ### 测试编写规范
 
 #### 测试命名
 
-```cpp
-TEST(ClassNameTest, MethodName_Condition_ExpectedBehavior) {
+```c
+TEST(ModuleNameTest, FunctionName_Condition_ExpectedBehavior) {
     // 测试实现
 }
 ```
 
 #### 测试结构 (AAA模式)
 
-```cpp
+```c
 TEST(CalculatorTest, Add_TwoPositiveNumbers_ReturnsSum) {
     // Arrange (准备)
-    Calculator calc;
     int a = 2, b = 3;
     
     // Act (执行)
-    int result = calc.add(a, b);
+    int result = calculator_add(a, b);
     
     // Assert (断言)
-    EXPECT_EQ(result, 5);
+    EXPECT_EQ(5, result);
 }
 ```
 
-#### 测试套件 (Test Fixtures)
+#### 字符串测试
 
-```cpp
-class GameTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        game = new Game();
-    }
+```c
+TEST(HelloTest, SayHello_DefaultGreeting_ReturnsCorrectString) {
+    // Arrange
+    char buffer[100];
     
-    void TearDown() override {
-        delete game;
-    }
+    // Act
+    hello_say_hello(buffer, sizeof(buffer));
     
-    Game* game;
-};
+    // Assert
+    EXPECT_STREQ("Hello, World!", buffer);
+}
+```
 
-TEST_F(GameTest, StartGame_InitialState_IsCorrect) {
-    EXPECT_TRUE(game->isInitialized());
+#### 添加新测试到运行器
+
+在 `tests/test_runner.c` 中添加：
+
+```c
+// 声明新测试函数
+extern void run_YourModuleTest_YourFunction(void);
+
+// 在main函数中添加
+int main(void) {
+    // ... 现有代码 ...
+    
+    // 运行你的新测试
+    printf("[----------] 1 test from YourModuleTest\n");
+    RUN_TEST(YourModuleTest, YourFunction);
+    printf("[----------] 1 test from YourModuleTest (0 ms total)\n\n");
+    
+    // ... 现有代码 ...
 }
 ```
 
@@ -241,13 +242,13 @@ TEST_F(GameTest, StartGame_InitialState_IsCorrect) {
 
 ### 测试组织
 
-```cpp
-// 按功能分组
-class GameCalculationTest : public ::testing::Test { ... };
-TEST_F(GameCalculationTest, HealthCalculation) { ... }
-TEST_F(GameCalculationTest, ExperienceCalculation) { ... }
+```c
+// 按功能分组 - 将相关测试放在同一个测试文件中
+// tests/test_game_calculation.c
+TEST(GameCalculationTest, HealthCalculation) { ... }
+TEST(GameCalculationTest, ExperienceCalculation) { ... }
 
-// 按场景分组  
+// 按场景分组 - 在同一个TEST套件中测试不同情况
 TEST(CalculatorTest, Add_PositiveNumbers) { ... }
 TEST(CalculatorTest, Add_NegativeNumbers) { ... }
 TEST(CalculatorTest, Add_ZeroValues) { ... }
@@ -290,14 +291,7 @@ git push origin your-branch
 ### Q2: 测试失败 "undefined reference to main"
 
 **问题**: 缺少main函数
-**解决**: 在测试文件中添加Google Test的main函数：
-
-```cpp
-int main(int argc, char **argv) {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-```
+**解决**: 确保 `tests/test_runner.c` 中包含main函数，并且正确链接了所有测试文件。
 
 ### Q3: 找不到头文件
 
@@ -309,12 +303,17 @@ int main(int argc, char **argv) {
 **问题**: 源文件未编译或链接
 **解决**: 确保源文件在 `src/` 目录下，Makefile会自动发现
 
+### Q5: 新测试没有运行
+
+**问题**: 添加了新测试但没有执行
+**解决**: 在 `tests/test_runner.c` 中添加新测试的声明和调用
+
 ## 📚 学习资源
 
-### Google Test文档
+### C语言TDD资源
 
-- [Google Test官方文档](https://google.github.io/googletest/)
-- [测试断言参考](https://google.github.io/googletest/reference/assertions.html)
+- [C语言单元测试最佳实践](https://github.com/ThrowTheSwitch/Unity)
+- [TDD by Example (Kent Beck)](https://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530)
 
 ### TDD最佳实践
 
@@ -327,16 +326,23 @@ int main(int argc, char **argv) {
 
 查看 `tests/` 目录下的测试文件，了解不同测试模式：
 
-- `test_calculator.cpp`: 基础单元测试
-- `test_mathutils.cpp`: 算法测试
-- `test_hello.cpp`: 字符串处理测试
-- `test_game_suite.cpp`: 测试套件示例
+- `test_calculator.c`: 基础单元测试
+- `test_mathutils.c`: 算法测试
+- `test_hello.c`: 字符串处理测试
+- `test_runner.c`: 测试运行器示例
+
+### C语言特有注意事项
+
+- **内存管理**: 手动管理内存分配和释放
+- **字符串处理**: 使用字符数组和标准字符串函数
+- **函数命名**: 使用模块前缀避免命名冲突
+- **头文件保护**: 使用 `#ifdef __cplusplus` 支持C++兼容
 
 ## 🤝 贡献指南
 
 1. **Fork仓库**: 创建自己的分支
 2. **遵循TDD**: 先写测试再写实现
-3. **代码规范**: 遵循C++编码标准
+3. **代码规范**: 遵循C语言编码标准
 4. **测试覆盖**: 确保新功能有对应测试
 5. **提交规范**: 使用清晰的提交信息
 6. **Pull Request**: 提交前确保所有测试通过
