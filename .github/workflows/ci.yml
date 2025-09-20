@@ -1,45 +1,44 @@
-# 工作流的名称，会显示在 GitHub Actions 页面
-name: C/C++ CI with Make
+# 工作流的名称，会显示在 GitHub 的 "Actions" 标签页中
+name: C/C++ CI
 
 # 触发工作流的事件
 on:
-  # 1. 当有代码推送到 main 分支时触发
+  # 当有代码推送到 main 分支时触发
   push:
     branches: [ "main" ]
-
-  # 2. 当有针对 main 分支的 Pull Request 创建或更新时触发
+  # 当有针对 main 分支的 Pull Request 时触发
   pull_request:
     branches: [ "main" ]
 
-  # 3. 允许您在 Actions 页面手动点击按钮触发
-  workflow_dispatch:
-
-# 定义工作流中要运行的任务
+# 定义工作流中要运行的任务 (jobs)
 jobs:
-  # 我们定义一个名为 "build-and-test" 的任务
+  # 定义一个名为 "build-and-test" 的任务
   build-and-test:
-    # 指定任务运行的虚拟机环境，ubuntu-latest 自带 gcc 和 make
+    # 指定任务运行的虚拟环境，这里使用最新的 Ubuntu 系统
     runs-on: ubuntu-latest
 
-    # 任务包含的一系列步骤
+    # 任务的执行步骤
     steps:
-      # 第一步：检出您的仓库代码
-      # 使用官方的 checkout action
-      - name: Checkout repository code
-        uses: actions/checkout@v4
+    # 第一步：检出代码
+    # 使用官方的 actions/checkout@v4 动作来获取你的仓库代码
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-      # 第二步：构建主要的可执行程序
-      # 运行 `make all` 来确保产品代码可以成功编译
-      - name: Build main application
-        run: make all
+    # 第二步：安装编译依赖
+    # 在 Ubuntu 环境中，build-essential 包包含了 make, gcc 等编译所需的核心工具
+    - name: Install build dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential
 
-      # 第三步：构建并运行所有测试
-      # 这是CI的核心步骤。`make test` 会编译并运行测试程序。
-      # 如果测试失败，`run_tests` 会返回一个非零退出码，这会自动让整个工作流失败。
-      - name: Run tests
-        run: make test
+    # 第三步：编译主程序
+    # 直接运行 'make' 或 'make all'，和你在本地操作完全一样
+    # 这一步可以验证代码是否能成功编译
+    - name: Build the application
+      run: make all
 
-      # 第四步 (可选)：清理生成的文件
-      # 虽然每个 job 结束后环境都会被销毁，但这是一个好习惯
-      - name: Clean up
-        run: make clean
+    # 第四步：编译并运行测试
+    # 运行 'make test'。这个命令会根据你的 Makefile 规则，
+    # 首先构建出测试可执行文件，然后运行它。
+    # 如果测试失败（即 ./bin/run_tests 返回非零退出码），这一步会自动失败，
+    # 从而导致整个工作流失败，这正是 CI 所期望的行为。
+    - name: Run tests
+      run: make test
