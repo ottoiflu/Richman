@@ -22,7 +22,9 @@ jobs:
     # 移除了 'make all' 这一步，因为 'make test' 会处理所有事情
     # - name: Build the application
     #   run: make all
-
+    - name: clean and rebuild
+      run: make clean && make build
+      
     - name: Build and Run tests
       # 将步骤名称改得更清晰
       run: make test
