@@ -1,8 +1,0 @@
-user AQS
-fund A 1000
-fund Q 3000
-fund S 1500
-userloc A 0
-userloc Q 1
-userloc S 2
-nextuser A

@@ -1,9 +1,0 @@
-preset user AQS
-preset fund A 1000
-preset fund Q 3000
-preset fund S 1500
-preset userloc A 0
-preset userloc Q 1
-preset userloc S 2
-preset nextuser A
-dump

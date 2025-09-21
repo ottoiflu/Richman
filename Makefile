@@ -10,8 +10,8 @@ TESTDIR := integration_tests
 BUILDDIR := obj
 BINDIR := bin
 
-# 源文件（只包含hello.c和main.c）
-SOURCES := $(SRCDIR)/hello.c $(SRCDIR)/main.c
+# 源文件（包含命令注册系统的所有源文件）
+SOURCES := $(SRCDIR)/main.c $(SRCDIR)/hello.c $(SRCDIR)/game_state.c $(SRCDIR)/command_registry.c $(SRCDIR)/command_processor.c $(SRCDIR)/game_io.c
 OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
 
 # 主要目标

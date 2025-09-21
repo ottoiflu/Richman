@@ -1,5 +1,7 @@
 [case1_helloworld] PASSED
 [case2_help] PASSED
 [case4_invalid_cmd] PASSED
-[case5_dump_basic] PASSED
-[case6_preset_dump] PASSED
+[case5_set_money] PASSED
+[case6_show_characters] PASSED
+[case7_choose_player] PASSED
+[case8_show_player] PASSED
