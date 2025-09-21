@@ -2,3 +2,4 @@
 #include <stdlib.h>
 #include <time.h>
 
+int roll_number();
