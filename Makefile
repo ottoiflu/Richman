@@ -16,11 +16,8 @@ LIBDIR := lib
 # 使用简单的C语言测试框架
 TEST_FRAMEWORK := unity
 
-# 4. 自动查找源文件
-# 使用wildcard函数自动查找src和tests目录下的所有.c文件。
-SOURCES := $(wildcard $(SRCDIR)/*.c)
-TEST_SOURCES := $(wildcard $(TESTDIR)/*.c)
-# 自动生成所有.o文件的路径。
+# 源文件（包含命令注册系统的所有源文件）
+SOURCES := $(SRCDIR)/main.c $(SRCDIR)/hello.c $(SRCDIR)/game_state.c $(SRCDIR)/command_registry.c $(SRCDIR)/command_processor.c $(SRCDIR)/game_io.c
 OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
 TEST_OBJECTS := $(patsubst $(TESTDIR)/%.c,$(BUILDDIR)/%.o,$(TEST_SOURCES))
 

@@ -20,6 +20,9 @@ echo "========================================"
 > "$TEST_LOG"
 rm -f dump.txt
 
+# 清理之前的output.txt文件
+find "$TEST_CASES_DIR" -name "output.txt" -delete 2>/dev/null || true
+
 # 检查Rich程序是否存在
 if [ ! -f "./bin/rich" ] && [ ! -f "./rich" ]; then
     echo -e "${RED}错误: ./bin/rich 或 ./rich 不存在，请先运行 make build${NC}"
@@ -77,20 +80,36 @@ for case_dir in "${test_cases[@]}"; do
         FAILED_TESTS=$((FAILED_TESTS + 1))
         continue
     fi
-
-    # 生成 result.txt
+    
+    # 执行测试命令
+    actual_output_file="/tmp/actual_output_${case_name}.txt"
+    output_file="$case_dir/output.txt"  # 在测试文件夹内保存output.txt
+    
+    # 读取命令文件并执行
     if [ -s "$cmdlist_file" ]; then
-        > "$result_file"
-        while IFS= read -r cmd || [ -n "$cmd" ]; do
-            if [[ -z "$cmd" || "$cmd" =~ ^[[:space:]]*// ]]; then
-                continue
-            fi
-            $BIN $cmd >> "$result_file" 2>&1
-        done < "$cmdlist_file"
+        # 自动获取所有游戏命令（使用命令注册系统）
+        GAME_COMMANDS=$(./rich list-game-commands 2>/dev/null || echo "preset|dump|set_money|show_characters|choose_player|show_player")
+        if grep -E "^($GAME_COMMANDS)" "$cmdlist_file" > /dev/null 2>&1; then
+            # 包含游戏命令，使用管道方式
+            ./rich < "$cmdlist_file" > "$actual_output_file" 2>&1
+        else
+            # 不包含游戏命令，按原来的方式执行
+            while IFS= read -r cmd || [ -n "$cmd" ]; do
+                # 跳过空行和注释行
+                if [[ -z "$cmd" || "$cmd" =~ ^[[:space:]]*// ]]; then
+                    continue
+                fi
+                # 执行命令
+                ./rich $cmd >> "$actual_output_file" 2>&1
+            done < "$cmdlist_file"
+        fi
     else
         $BIN > "$result_file" 2>&1
     fi
-
+    
+    # 将输出复制到测试文件夹内的output.txt
+    cp "$actual_output_file" "$output_file"
+    
     # 比较输出结果
     if diff -q "$result_file" "$expected_file" > /dev/null 2>&1; then
         echo -e "${GREEN}PASSED${NC}"
