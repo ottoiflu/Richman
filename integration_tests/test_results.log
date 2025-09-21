@@ -1,7 +1,43 @@
 [case1_helloworld] PASSED
-[case2_help] PASSED
+[case2_help] FAILED - 输出不匹配
+期望输出:
+Rich - 大富翁程序
+用法:
+  rich testhelloworld    - 运行hello world测试
+  rich help             - 显示帮助信息
+  rich < cmdfile        - 从文件读取命令执行
+
+=== 已注册的游戏命令 ===
+create_map      - create_map命令 [Map-张三]
+show_map        - show_map命令 [Map-张三]
+set_money       - 设置初始资金 [Player-张弛]
+show_characters - 显示角色列表 [Player-张弛]
+choose_player   - 选择玩家角色 [Player-张弛]
+show_player     - 显示玩家信息 [Player-张弛]
+实际输出:
+Rich - 大富翁程序
+用法:
+  rich testhelloworld    - 运行hello world测试
+  rich help             - 显示帮助信息
+  rich < cmdfile        - 从文件读取命令执行
+
+=== 已注册的游戏命令 ===
+create_map      - create_map命令 [Map-张三]
+show_map        - show_map命令 [Map-张三]
+reset_map       - reset_map命令 [Map-张三]
+set_money       - 设置初始资金 [Player-张弛]
+show_characters - 显示角色列表 [Player-张弛]
+choose_player   - 选择玩家角色 [Player-张弛]
+show_player     - 显示玩家信息 [Player-张弛]
+差异详情:
+9a10
+> reset_map       - reset_map命令 [Map-张三]
+---
 [case4_invalid_cmd] PASSED
 [case5_set_money] PASSED
 [case6_show_characters] PASSED
 [case7_choose_player] PASSED
 [case8_show_player] PASSED
+[case_map_create_map] PASSED
+[case_map_reset_map] PASSED
+[case_map_show_map] PASSED

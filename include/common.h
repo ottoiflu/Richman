@@ -21,6 +21,7 @@ extern "C" {
 #include "game_types.h"      // 数据结构定义
 #include "command_processor.h" // 统一命令处理（需要先包含，定义CommandResult）
 #include "command_registry.h" // 命令注册系统
+#include "auto_register.h"   // 自动注册宏系统
 #include "game_state.h"      // 游戏状态管理
 #include "game_io.h"         // 输入输出处理
 #include "hello.h"           // Hello World功能（TDD基础测试）

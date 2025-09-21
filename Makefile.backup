@@ -13,10 +13,8 @@ BINDIR := bin
 # 源文件（包含命令注册系统和自动发现的模块文件）
 CORE_SOURCES := $(SRCDIR)/main.c $(SRCDIR)/hello.c $(SRCDIR)/game_state.c $(SRCDIR)/command_registry.c $(SRCDIR)/command_processor.c $(SRCDIR)/game_io.c
 MODULE_SOURCES := $(wildcard $(SRCDIR)/modules/*.c)
-SOURCES := $(CORE_SOURCES) $(MODULE_SOURCES) $(wildcard src/modules/*.c)
-CORE_OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(CORE_SOURCES))
-MODULE_OBJECTS := $(patsubst $(SRCDIR)/modules/%.c,$(BUILDDIR)/modules/%.o,$(MODULE_SOURCES))
-OBJECTS := $(CORE_OBJECTS) $(MODULE_OBJECTS)
+SOURCES := $(CORE_SOURCES) $(MODULE_SOURCES)
+OBJECTS := $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SOURCES))
 
 # 主要目标
 .PHONY: all build test clean help install uninstall
@@ -38,12 +36,7 @@ $(BINDIR)/rich: $(OBJECTS)
 
 # 编译规则
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-# 编译规则：模块文件 -> 目标文件
-$(BUILDDIR)/modules/%.o: $(SRCDIR)/modules/%.c
-	@mkdir -p $(dir $@)
+	@mkdir -p $(BUILDDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # 一键测试：运行集成测试

@@ -5,6 +5,9 @@ Rich - 大富翁程序
   rich < cmdfile        - 从文件读取命令执行
 
 === 已注册的游戏命令 ===
+create_map      - create_map命令 [Map-张三]
+show_map        - show_map命令 [Map-张三]
+reset_map       - reset_map命令 [Map-张三]
 set_money       - 设置初始资金 [Player-张弛]
 show_characters - 显示角色列表 [Player-张弛]
 choose_player   - 选择玩家角色 [Player-张弛]
