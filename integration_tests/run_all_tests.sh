@@ -84,15 +84,21 @@ for case_dir in "${test_cases[@]}"; do
     
     # 读取命令文件并执行
     if [ -s "$cmdlist_file" ]; then
-        # 如果cmdlist.txt不为空，读取命令并执行
-        while IFS= read -r cmd || [ -n "$cmd" ]; do
-            # 跳过空行和注释行
-            if [[ -z "$cmd" || "$cmd" =~ ^[[:space:]]*// ]]; then
-                continue
-            fi
-            # 执行命令
-            ./rich $cmd >> "$actual_output_file" 2>&1
-        done < "$cmdlist_file"
+        # 检查是否包含游戏命令（preset, dump等）
+        if grep -E "^(preset|dump)" "$cmdlist_file" > /dev/null 2>&1; then
+            # 包含游戏命令，使用管道方式
+            ./rich < "$cmdlist_file" > "$actual_output_file" 2>&1
+        else
+            # 不包含游戏命令，按原来的方式执行
+            while IFS= read -r cmd || [ -n "$cmd" ]; do
+                # 跳过空行和注释行
+                if [[ -z "$cmd" || "$cmd" =~ ^[[:space:]]*// ]]; then
+                    continue
+                fi
+                # 执行命令
+                ./rich $cmd >> "$actual_output_file" 2>&1
+            done < "$cmdlist_file"
+        fi
     else
         # 如果cmdlist.txt为空，执行无参数的rich命令
         ./rich >> "$actual_output_file" 2>&1
