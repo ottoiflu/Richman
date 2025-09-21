@@ -1,4 +1,4 @@
-#include "player.h"
+#include "roll.h"
 
 int roll_number(){
    int number = rand() % 6 + 1; 
