@@ -1,7 +1,7 @@
 #include "player.h"
 
 int roll_number(){
-   int number = rand() % 6 + 1; // 生成1到6之间的随机数
-   printf("Rolled number: %d\n", number);
+   int number = rand() % 6 + 1; 
+   printf("骰子的点数为: %d\n", number);
    return number;
 }
