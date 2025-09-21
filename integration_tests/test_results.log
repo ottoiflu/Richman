@@ -1,3 +1,5 @@
 [case1_helloworld] PASSED
 [case2_help] PASSED
 [case4_invalid_cmd] PASSED
+[case5_dump_basic] PASSED
+[case6_preset_dump] PASSED
