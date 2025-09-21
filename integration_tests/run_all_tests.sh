@@ -25,6 +25,9 @@ echo "========================================"
 > "$TEST_LOG"
 rm -f dump.txt
 
+# 清理之前的output.txt文件
+find "$TEST_CASES_DIR" -name "output.txt" -delete 2>/dev/null || true
+
 # 检查Rich程序是否存在
 if [ ! -f "./rich" ]; then
     echo -e "${RED}错误: ./rich 程序不存在，请先运行 make build${NC}"
@@ -81,11 +84,13 @@ for case_dir in "${test_cases[@]}"; do
     
     # 执行测试命令
     actual_output_file="/tmp/actual_output_${case_name}.txt"
+    output_file="$case_dir/output.txt"  # 在测试文件夹内保存output.txt
     
     # 读取命令文件并执行
     if [ -s "$cmdlist_file" ]; then
-        # 检查是否包含游戏命令（preset, dump等）
-        if grep -E "^(preset|dump)" "$cmdlist_file" > /dev/null 2>&1; then
+        # 自动获取所有游戏命令（使用命令注册系统）
+        GAME_COMMANDS=$(./rich list-game-commands 2>/dev/null || echo "preset|dump|set_money|show_characters|choose_player|show_player")
+        if grep -E "^($GAME_COMMANDS)" "$cmdlist_file" > /dev/null 2>&1; then
             # 包含游戏命令，使用管道方式
             ./rich < "$cmdlist_file" > "$actual_output_file" 2>&1
         else
@@ -103,6 +108,9 @@ for case_dir in "${test_cases[@]}"; do
         # 如果cmdlist.txt为空，执行无参数的rich命令
         ./rich >> "$actual_output_file" 2>&1
     fi
+    
+    # 将输出复制到测试文件夹内的output.txt
+    cp "$actual_output_file" "$output_file"
     
     # 比较输出结果
     if diff -q "$actual_output_file" "$expected_file" > /dev/null 2>&1; then

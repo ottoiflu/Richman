@@ -1,0 +1,2 @@
+choose_player 2
+show_player
