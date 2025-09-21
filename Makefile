@@ -57,8 +57,20 @@ create-test-scripts:
 install: build
 	@mkdir -p ~/.local/bin
 	@cp $(BINDIR)/rich ~/.local/bin/rich
-	@echo "Rich程序已安装到 ~/.local/bin/rich"
-	@echo "现在可以直接使用：rich testhelloworld"
+	@echo "✅ Rich程序已安装到 ~/.local/bin/rich"
+	@echo ""
+	@if echo $$PATH | grep -q "$(HOME)/.local/bin"; then \
+		echo "🎯 PATH已配置，可直接使用：rich testhelloworld"; \
+	else \
+		echo "🔧 正在配置PATH环境变量..."; \
+		echo 'export PATH="$$HOME/.local/bin:$$PATH"' >> ~/.bashrc; \
+		echo "✅ PATH已添加到 ~/.bashrc"; \
+		echo ""; \
+		echo "🎯 使用方法："; \
+		echo "  当前会话：export PATH=\"\$$HOME/.local/bin:\$$PATH\""; \
+		echo "  新会话：直接使用 rich testhelloworld"; \
+		echo "  或重新加载：source ~/.bashrc"; \
+	fi
 
 
 # 卸载
