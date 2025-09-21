@@ -1,0 +1,5 @@
+Rich - 大富翁程序
+用法:
+  rich testhelloworld    - 运行hello world测试
+  rich version          - 显示版本信息
+  rich help             - 显示帮助信息

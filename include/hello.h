@@ -16,6 +16,9 @@ void hello_say_hello(char* buffer, size_t buffer_size);
 void hello_say_hello_with_name(char* buffer, size_t buffer_size, const char* name);
 void hello_get_greeting(char* buffer, size_t buffer_size);
 
+// 版本信息功能函数声明 - 新功能示例
+void hello_get_version(char* buffer, size_t buffer_size);
+
 #ifdef __cplusplus
 }
 #endif
