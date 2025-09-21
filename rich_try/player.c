@@ -10,6 +10,11 @@ void init_players(Player players[], int num_players, int init_money) {
         strncpy(players[i].name, default_names[i], MAX_NAME_LEN);
         players[i].money = init_money;
         players[i].points = 0;
+        players[i].position = 0; // 所有玩家从起点开始
+        players[i].bombs = 0;
+        players[i].roadblocks = 0;
+        players[i].robots = 0;
+        players[i].god_of_wealth_turns = 0;
         // 其他初始化
     }
 }
