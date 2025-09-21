@@ -1,0 +1,3 @@
+测试用例1: Hello World基本功能测试
+描述: 测试rich testhelloworld命令是否正确输出Hello, World!
+预期: 程序正常退出并输出Hello, World!

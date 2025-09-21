@@ -1,0 +1,28 @@
+# .github/workflows/build-and-test.yml
+
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install build dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+
+    # 移除了 'make all' 这一步，因为 'make test' 会处理所有事情
+    # - name: Build the application
+    #   run: make all
+
+    - name: Build and Run tests
+      # 将步骤名称改得更清晰
+      run: make test
