@@ -59,3 +59,16 @@ void show_character_list() {
 		printf("%d. %s（%s）\n", character_list[i].id, character_list[i].name, character_list[i].color);
 	}
 }
+
+
+int init_player_count() {
+    int count = 0;
+    printf("请输入玩家数量（2-4）：");
+    scanf("%d", &count);
+    if (count < 2 || count > 4) {
+        printf("玩家数量无效，退出。\n");
+        exit(1);
+    }
+    getchar(); // 清除换行符
+    return count;
+}
