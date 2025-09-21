@@ -1,0 +1,5 @@
+错误: 未知命令 'invalidcmd'
+Rich - 大富翁程序
+用法:
+  rich testhelloworld    - 运行hello world测试
+  rich help             - 显示帮助信息
